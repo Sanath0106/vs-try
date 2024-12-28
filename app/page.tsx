@@ -153,18 +153,31 @@ export default function Home() {
           {isMenuOpen && (
             <div className="md:hidden py-4 border-t border-zinc-200 dark:border-zinc-800">
               <nav className="flex flex-col space-y-4">
-                <a href="#features" className="text-sm font-medium hover:text-violet-600 dark:hover:text-violet-400">
+                <a href="#features" 
+                  className="text-sm font-medium hover:text-violet-600 dark:hover:text-violet-400 px-4 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Features
                 </a>
-                <a href="#how-it-works" className="text-sm font-medium hover:text-violet-600 dark:hover:text-violet-400">
+                <a href="#how-it-works" 
+                  className="text-sm font-medium hover:text-violet-600 dark:hover:text-violet-400 px-4 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   How it Works
                 </a>
-                <a href="#contact" className="text-sm font-medium hover:text-violet-600 dark:hover:text-violet-400">
+                <a href="#contact" 
+                  className="text-sm font-medium hover:text-violet-600 dark:hover:text-violet-400 px-4 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Contact
                 </a>
-                <div className="pt-4 flex flex-col space-y-2">
-                  <Button variant="ghost" className="w-full">Login</Button>
-                  <Button className="w-full bg-violet-600 hover:bg-violet-700">Sign Up</Button>
+                <div className="pt-4 flex flex-col space-y-2 px-4">
+                  <Link href="/sign-in" className="w-full">
+                    <Button variant="ghost" className="w-full justify-center">Login</Button>
+                  </Link>
+                  <Link href="/sign-up" className="w-full">
+                    <Button className="w-full bg-violet-600 hover:bg-violet-700 justify-center">Sign Up</Button>
+                  </Link>
                 </div>
               </nav>
             </div>
@@ -173,29 +186,29 @@ export default function Home() {
       </header>
 
       {/* Hero Section with Visual */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
+      <section className="pt-24 md:pt-32 pb-16 md:pb-20 px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute inset-0 bg-grid-zinc-200/50 dark:bg-grid-zinc-800/50 bg-[size:32px_32px] opacity-20" />
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
             <div className="text-center lg:text-left">
-              <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent mb-6 tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent mb-6 tracking-tight">
                 Master Your Interviews with AI
               </h1>
-              <p className="text-xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-2xl lg:max-w-none mx-auto">
+              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-2xl lg:max-w-none mx-auto">
                 Practice interviews with Gemini AI and boost your confidence. Get instant feedback and improve your interview skills.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:opacity-90 transition-opacity text-lg px-8">
+                <Button size="lg" className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:opacity-90 transition-opacity text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto">
                   Start Practicing Now
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8">
+                <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto">
                   Watch Demo
                 </Button>
               </div>
             </div>
-            <div className="relative hidden lg:block">
+            <div className="relative mt-8 lg:mt-0">
               <div className="absolute -inset-4 bg-gradient-to-r from-violet-500 to-indigo-500 opacity-20 blur-3xl rounded-3xl" />
-              <div className="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-8">
+              <div className="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-4 sm:p-8">
                 <div className="aspect-video rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 overflow-hidden">
                   <div className="h-full flex flex-col">
                     <div className="flex items-center gap-3 p-4 border-b border-zinc-200 dark:border-zinc-700">
@@ -361,7 +374,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -379,7 +392,7 @@ export default function Home() {
                 <div className="relative bg-white dark:bg-zinc-900 rounded-xl p-8 shadow-lg border border-zinc-200/50 dark:border-zinc-800/50 h-full flex flex-col items-center text-center transition-transform duration-300 group-hover:-translate-y-1">
                   <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>
                     <div className="w-8 h-8 text-white">
-                      <Image
+          <Image
                         src={feature.icon}
                         alt={feature.title}
                         width={32}
@@ -411,8 +424,8 @@ export default function Home() {
       {/* Footer */}
       <footer id="contact" className="bg-zinc-50/50 dark:bg-zinc-900/50 py-12 border-t border-zinc-200 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center sm:text-left">
               <h3 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent mb-4">
                 Nexus
               </h3>
@@ -444,7 +457,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800 text-center text-zinc-600 dark:text-zinc-300">
+          <div className="mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800 text-center text-sm text-zinc-600 dark:text-zinc-300">
             © 2024 Nexus. All rights reserved.
           </div>
         </div>

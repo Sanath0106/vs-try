@@ -112,3 +112,46 @@ html {
 .animation-delay-4000 {
   animation-delay: 4s;
 }
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Responsive padding for sections */
+  .section-padding {
+    @apply py-12 sm:py-16 md:py-20 lg:py-24;
+  }
+  
+  /* Responsive container padding */
+  .container-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Responsive text sizes */
+  .heading-1 {
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold;
+  }
+  
+  .heading-2 {
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold;
+  }
+  
+  .body-text {
+    @apply text-base sm:text-lg text-zinc-600 dark:text-zinc-300;
+  }
+}
+
+/* Improve tap targets on mobile */
+@media (max-width: 640px) {
+  button, a {
+    @apply min-h-[44px];
+  }
+}
+
+/* Better scrolling on mobile */
+@media (max-width: 640px) {
+  html {
+    scroll-padding-top: 80px;
+  }
+}
