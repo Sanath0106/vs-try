@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Brain, Code, Target, Timer, Bug } from "lucide-react";
+import { ArrowRight, BookOpen, Brain, Code, Target, Timer, Bug, Clock, Trophy, RefreshCw, Lightbulb } from "lucide-react";
 import Link from "next/link";
 
 const stats = [
@@ -258,26 +258,6 @@ export default function DashboardPage() {
           </div>
         </Card>
       </motion.div>
-
-      <Card className="p-6">
-        <div className="flex items-center space-x-4">
-          <div className="bg-violet-100 dark:bg-violet-900/20 p-3 rounded-lg">
-            <Bug className="w-6 h-6 text-violet-600" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold">Code Debugger</h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Practice debugging with real DSA problems
-            </p>
-          </div>
-          <Button asChild variant="outline">
-            <Link href="/debugger">
-              Start
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
-          </Button>
-        </div>
-      </Card>
     </div>
   );
 } 

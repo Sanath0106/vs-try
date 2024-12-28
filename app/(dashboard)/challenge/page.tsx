@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ArrowRight, Code, Timer } from "lucide-react";
+import { ArrowRight, Code, Timer, Bug } from "lucide-react";
+import Link from "next/link";
 
 // Daily LeetCode challenge data
 const dailyChallenge = {
@@ -95,6 +96,35 @@ export default function ChallengePage() {
             Solve Challenge
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="mt-8"
+      >
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="bg-violet-100 dark:bg-violet-900/20 p-3 rounded-lg">
+                <Bug className="w-6 h-6 text-violet-600 dark:text-violet-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Code Debugger</h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  Practice debugging with real DSA problems
+                </p>
+              </div>
+            </div>
+            <Button asChild variant="outline">
+              <Link href="/debugger">
+                Start
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+          </div>
         </Card>
       </motion.div>
     </div>

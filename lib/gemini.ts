@@ -1,3 +1,5 @@
+"use server";
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
@@ -309,5 +311,56 @@ export async function generateBuggyCode(
         ? 'Failed to generate valid challenge format'
         : 'Failed to generate challenge. Please try again.'
     );
+  }
+}
+
+export async function generateQuizQuestions(topic: string, difficulty: string) {
+  "use server";
+  
+  const model = genAI.getGenerativeModel({
+    model: "gemini-pro",
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 2048,
+    },
+  });
+
+  const prompt = `
+    Generate 10 multiple choice questions for a technical interview quiz.
+    Topic: ${topic}
+    Difficulty: ${difficulty}
+
+    Return a JSON array of questions exactly in this format:
+    [
+      {
+        "id": 1,
+        "question": "What is...",
+        "options": ["A) ...", "B) ...", "C) ...", "D) ..."],
+        "correctAnswer": "A) ...",
+        "explanation": "This is correct because..."
+      }
+    ]
+
+    Requirements:
+    1. Questions MUST be specifically about ${topic}
+    2. Difficulty should match ${difficulty} level
+    3. Each question must have exactly 4 options
+    4. Include clear explanations for correct answers
+    5. Return ONLY the JSON array
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response.text();
+    
+    // Clean and parse the response
+    const cleanJson = response
+      .replace(/```json\s*|\s*```/g, '')
+      .trim();
+    
+    return JSON.parse(cleanJson);
+  } catch (error) {
+    console.error('Error generating quiz questions:', error);
+    throw new Error('Failed to generate quiz questions');
   }
 } 

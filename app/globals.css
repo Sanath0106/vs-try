@@ -79,11 +79,13 @@ html {
 .bg-grid-zinc-200\/50 {
   background-image: linear-gradient(to right, rgb(228 228 231 / 0.5) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(228 228 231 / 0.5) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .bg-grid-zinc-800\/50 {
   background-image: linear-gradient(to right, rgb(39 39 42 / 0.5) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(39 39 42 / 0.5) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 @keyframes blob {
