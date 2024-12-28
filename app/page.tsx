@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const features = [
   {
@@ -84,6 +86,7 @@ const quotes = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentQuote, setCurrentQuote] = useState(0);
 
@@ -198,11 +201,13 @@ export default function Home() {
                 Practice interviews with Gemini AI and boost your confidence. Get instant feedback and improve your interview skills.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:opacity-90 transition-opacity text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:opacity-90 transition-opacity text-lg px-8"
+                  onClick={() => router.push('/sign-up')}
+                >
                   Start Practicing Now
-                </Button>
-                <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto">
-                  Watch Demo
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </div>
             </div>

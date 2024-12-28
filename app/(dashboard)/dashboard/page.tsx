@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Brain, Code, Target, Timer } from "lucide-react";
+import { ArrowRight, BookOpen, Brain, Code, Target, Timer, Bug } from "lucide-react";
+import Link from "next/link";
 
 const stats = [
   { label: "Practice Sessions", value: "12" },
@@ -54,6 +55,60 @@ const studyTips = [
   },
 ];
 
+const techNews = [
+  {
+    title: "OpenAI Releases GPT-5",
+    description: "Latest breakthrough in AI technology with enhanced capabilities",
+    source: "TechCrunch",
+    date: "2h ago",
+    tag: "AI News",
+    link: "#"
+  },
+  {
+    title: "Microsoft Announces New Developer Tools",
+    description: "New suite of AI-powered development tools for cloud computing",
+    source: "The Verge",
+    date: "4h ago",
+    tag: "Dev Tools",
+    link: "#"
+  },
+  {
+    title: "Top Tech Trends 2024",
+    description: "AI, Quantum Computing, and Web3 lead the way",
+    source: "WIRED",
+    date: "1d ago",
+    tag: "Trends",
+    link: "#"
+  }
+];
+
+const jobOpportunities = [
+  {
+    role: "Software Engineer Intern",
+    company: "Google",
+    location: "Remote / Mountain View, CA",
+    type: "Internship",
+    posted: "2d ago",
+    link: "#"
+  },
+  {
+    role: "Junior Frontend Developer",
+    company: "Meta",
+    location: "Remote / New York",
+    type: "Full-time",
+    posted: "1d ago",
+    link: "#"
+  },
+  {
+    role: "ML Engineer",
+    company: "OpenAI",
+    location: "San Francisco, CA",
+    type: "Full-time",
+    posted: "3d ago",
+    link: "#"
+  }
+];
+
 export default function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -92,36 +147,43 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Progress Section */}
+      {/* Tech News and Job Opportunities */}
       <div className="grid md:grid-cols-2 gap-8 mb-8">
-        {/* Topic Progress */}
+        {/* Tech News */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Card className="p-6 sm:p-8">
-            <h2 className="text-2xl font-bold mb-6">Your Progress</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Latest in Tech</h2>
+              <Button variant="ghost" className="text-sm text-violet-600 hover:text-violet-700">
+                View All
+              </Button>
+            </div>
             <div className="space-y-6">
-              {upcomingTopics.map((topic, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/20 flex items-center justify-center">
-                        <topic.icon className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+              {techNews.map((news, index) => (
+                <div key={index} className="group">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-violet-100 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400">
+                          {news.tag}
+                        </span>
+                        <span className="text-xs text-zinc-500">{news.date}</span>
                       </div>
-                      <div>
-                        <h3 className="font-semibold">{topic.topic}</h3>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400">{topic.description}</p>
-                      </div>
+                      <h3 className="font-semibold group-hover:text-violet-600 transition-colors">
+                        {news.title}
+                      </h3>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {news.description}
+                      </p>
+                      <p className="text-xs text-zinc-500">Source: {news.source}</p>
                     </div>
-                    <span className="text-sm font-medium">{topic.progress}%</span>
-                  </div>
-                  <div className="h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-violet-600 to-indigo-600 rounded-full transition-all duration-500"
-                      style={{ width: `${topic.progress}%` }}
-                    />
+                    <Button variant="ghost" size="sm" className="shrink-0">
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -129,29 +191,42 @@ export default function DashboardPage() {
           </Card>
         </motion.div>
 
-        {/* Study Tips */}
+        {/* Job Opportunities */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <Card className="p-6 sm:p-8">
-            <h2 className="text-2xl font-bold mb-6">Interview Preparation Tips</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Job Opportunities</h2>
+              <Button variant="ghost" className="text-sm text-violet-600 hover:text-violet-700">
+                View All
+              </Button>
+            </div>
             <div className="space-y-6">
-              {studyTips.map((section, index) => (
-                <div key={index}>
-                  <h3 className="font-semibold mb-3 flex items-center space-x-2">
-                    <BookOpen className="h-4 w-4 text-violet-600" />
-                    <span>{section.title}</span>
-                  </h3>
-                  <ul className="space-y-2">
-                    {section.tips.map((tip, tipIndex) => (
-                      <li key={tipIndex} className="flex items-start space-x-2">
-                        <span className="text-violet-600 dark:text-violet-400">•</span>
-                        <span className="text-sm text-zinc-600 dark:text-zinc-400">{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {jobOpportunities.map((job, index) => (
+                <div key={index} className="group">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
+                          {job.type}
+                        </span>
+                        <span className="text-xs text-zinc-500">{job.posted}</span>
+                      </div>
+                      <h3 className="font-semibold group-hover:text-violet-600 transition-colors">
+                        {job.role}
+                      </h3>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {job.company}
+                      </p>
+                      <p className="text-xs text-zinc-500">{job.location}</p>
+                    </div>
+                    <Button variant="ghost" size="sm" className="shrink-0">
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -183,6 +258,26 @@ export default function DashboardPage() {
           </div>
         </Card>
       </motion.div>
+
+      <Card className="p-6">
+        <div className="flex items-center space-x-4">
+          <div className="bg-violet-100 dark:bg-violet-900/20 p-3 rounded-lg">
+            <Bug className="w-6 h-6 text-violet-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold">Code Debugger</h3>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Practice debugging with real DSA problems
+            </p>
+          </div>
+          <Button asChild variant="outline">
+            <Link href="/debugger">
+              Start
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </Button>
+        </div>
+      </Card>
     </div>
   );
 } 

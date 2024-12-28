@@ -14,6 +14,13 @@ const navigation = [
   { name: "Quiz", href: "/quiz" },
 ];
 
+const protectedRoutes = [
+  "/dashboard",
+  "/challenges",
+  "/debugger",
+  "/resume",
+];
+
 export default function DashboardLayout({
   children,
 }: {
