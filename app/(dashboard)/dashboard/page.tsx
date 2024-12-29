@@ -1,11 +1,16 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Brain, Code, Target, Timer, Bug, Clock, Trophy, RefreshCw, Lightbulb } from "lucide-react";
+import { ArrowRight, Clock, Brain, Target, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { fetchTechNews, fetchTechJobs, NewsItem, JobItem } from "@/lib/api";
+import { formatDistanceToNow } from 'date-fns';
+import { InterviewDialog } from "@/components/interview/InterviewDialog";
 
+// Add the stats data
 const stats = [
   { label: "Practice Sessions", value: "12" },
   { label: "Hours Practiced", value: "8.5" },
@@ -13,103 +18,49 @@ const stats = [
   { label: "Success Rate", value: "85%" },
 ];
 
-const upcomingTopics = [
-  {
-    topic: "System Design",
-    description: "Learn about scalability, load balancing, and caching",
-    icon: Brain,
-    progress: 65,
-  },
-  {
-    topic: "Data Structures",
-    description: "Master arrays, linked lists, trees, and graphs",
-    icon: Code,
-    progress: 80,
-  },
-  {
-    topic: "Behavioral",
-    description: "Practice STAR method responses and leadership examples",
-    icon: Target,
-    progress: 45,
-  },
-];
-
-const studyTips = [
-  {
-    title: "System Design Preparation",
-    tips: [
-      "Study distributed systems concepts",
-      "Practice drawing system architectures",
-      "Understand CAP theorem",
-      "Learn about database scaling",
-    ],
-  },
-  {
-    title: "Coding Interview Tips",
-    tips: [
-      "Think aloud while solving problems",
-      "Start with brute force approach",
-      "Optimize solution step by step",
-      "Test your code with edge cases",
-    ],
-  },
-];
-
-const techNews = [
-  {
-    title: "OpenAI Releases GPT-5",
-    description: "Latest breakthrough in AI technology with enhanced capabilities",
-    source: "TechCrunch",
-    date: "2h ago",
-    tag: "AI News",
-    link: "#"
-  },
-  {
-    title: "Microsoft Announces New Developer Tools",
-    description: "New suite of AI-powered development tools for cloud computing",
-    source: "The Verge",
-    date: "4h ago",
-    tag: "Dev Tools",
-    link: "#"
-  },
-  {
-    title: "Top Tech Trends 2024",
-    description: "AI, Quantum Computing, and Web3 lead the way",
-    source: "WIRED",
-    date: "1d ago",
-    tag: "Trends",
-    link: "#"
-  }
-];
-
-const jobOpportunities = [
-  {
-    role: "Software Engineer Intern",
-    company: "Google",
-    location: "Remote / Mountain View, CA",
-    type: "Internship",
-    posted: "2d ago",
-    link: "#"
-  },
-  {
-    role: "Junior Frontend Developer",
-    company: "Meta",
-    location: "Remote / New York",
-    type: "Full-time",
-    posted: "1d ago",
-    link: "#"
-  },
-  {
-    role: "ML Engineer",
-    company: "OpenAI",
-    location: "San Francisco, CA",
-    type: "Full-time",
-    posted: "3d ago",
-    link: "#"
-  }
-];
-
 export default function DashboardPage() {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [jobs, setJobs] = useState<JobItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInterviewDialogOpen, setIsInterviewDialogOpen] = useState(false);
+
+  // Function to fetch data
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [newsData, jobsData] = await Promise.all([
+        fetchTechNews(),
+        fetchTechJobs()
+      ]);
+      
+      if (newsData.length === 0 && jobsData.length === 0) {
+        throw new Error('No data available');
+      }
+      
+      setNews(newsData);
+      setJobs(jobsData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // You could show a toast notification here
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial fetch
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Auto-refresh every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData();
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Welcome Section */}
@@ -148,46 +99,72 @@ export default function DashboardPage() {
       </div>
 
       {/* Tech News and Job Opportunities */}
-      <div className="grid md:grid-cols-2 gap-8 mb-8">
+      <div className="grid md:grid-cols-2 gap-4 lg:gap-8 mb-8">
         {/* Tech News */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Card className="p-6 sm:p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Latest in Tech</h2>
-              <Button variant="ghost" className="text-sm text-violet-600 hover:text-violet-700">
+          <Card className="h-full p-4 sm:p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Latest in Tech</h2>
+              <Button 
+                variant="ghost" 
+                className="text-xs sm:text-sm text-violet-600 hover:text-violet-700"
+                onClick={() => window.open('https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB', '_blank')}
+              >
                 View All
               </Button>
             </div>
-            <div className="space-y-6">
-              {techNews.map((news, index) => (
-                <div key={index} className="group">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-violet-100 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400">
-                          {news.tag}
-                        </span>
-                        <span className="text-xs text-zinc-500">{news.date}</span>
-                      </div>
-                      <h3 className="font-semibold group-hover:text-violet-600 transition-colors">
-                        {news.title}
-                      </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                        {news.description}
-                      </p>
-                      <p className="text-xs text-zinc-500">Source: {news.source}</p>
-                    </div>
-                    <Button variant="ghost" size="sm" className="shrink-0">
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
+            {isLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-1/2" />
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4 sm:space-y-6">
+                {news.map((item, index) => (
+                  <div 
+                    key={index} 
+                    className="group cursor-pointer rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors p-2" 
+                    onClick={() => window.open(item.url, '_blank')}
+                  >
+                    <div className="flex items-start space-x-3 sm:space-x-4">
+                      {item.urlToImage && (
+                        <div className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden">
+                          <img 
+                            src={item.urlToImage} 
+                            alt={item.title}
+                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1 sm:mb-2">
+                          <span className="text-xs font-medium px-2 py-1 rounded-full bg-violet-100 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 truncate max-w-[150px]">
+                            {item.source.name}
+                          </span>
+                          <span className="text-xs text-zinc-500 shrink-0">
+                            {formatDistanceToNow(new Date(item.publishedAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold group-hover:text-violet-600 transition-colors line-clamp-2 text-sm sm:text-base">
+                          {item.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2 mt-1">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
         </motion.div>
 
@@ -197,39 +174,72 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Card className="p-6 sm:p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Job Opportunities</h2>
-              <Button variant="ghost" className="text-sm text-violet-600 hover:text-violet-700">
+          <Card className="h-full p-4 sm:p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Job Opportunities</h2>
+              <Button 
+                variant="ghost" 
+                className="text-xs sm:text-sm text-violet-600 hover:text-violet-700"
+                onClick={() => window.open('https://www.linkedin.com/jobs/', '_blank')}
+              >
                 View All
               </Button>
             </div>
-            <div className="space-y-6">
-              {jobOpportunities.map((job, index) => (
-                <div key={index} className="group">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
-                          {job.type}
-                        </span>
-                        <span className="text-xs text-zinc-500">{job.posted}</span>
-                      </div>
-                      <h3 className="font-semibold group-hover:text-violet-600 transition-colors">
-                        {job.role}
-                      </h3>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                        {job.company}
-                      </p>
-                      <p className="text-xs text-zinc-500">{job.location}</p>
-                    </div>
-                    <Button variant="ghost" size="sm" className="shrink-0">
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
+            {isLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-1/2" />
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4 sm:space-y-6">
+                {jobs.map((job) => (
+                  <div 
+                    key={job.id} 
+                    className="group cursor-pointer rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors p-2" 
+                    onClick={() => window.open(job.url, '_blank')}
+                  >
+                    <div className="flex items-start space-x-3 sm:space-x-4">
+                      <div className="shrink-0 w-12 h-12 rounded overflow-hidden hidden sm:block">
+                        <img 
+                          src={job.company_logo} 
+                          alt={`${job.company} logo`}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${job.company}&background=random`;
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center flex-wrap gap-2 mb-1 sm:mb-2">
+                          <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
+                            {job.type}
+                          </span>
+                          <span className="text-xs text-zinc-500">
+                            {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold group-hover:text-violet-600 transition-colors text-sm sm:text-base">
+                          {job.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+                          {job.company}
+                        </p>
+                        <p className="text-xs text-zinc-500 mt-1">
+                          {job.location}
+                        </p>
+                      </div>
+                      <Button variant="ghost" size="icon" className="shrink-0">
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
         </motion.div>
       </div>
@@ -240,9 +250,9 @@ export default function DashboardPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <Card className="p-6 sm:p-8 relative overflow-hidden">
+        <Card className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-indigo-500/10" />
-          <div className="relative">
+          <div className="relative p-6 sm:p-8">
             <h2 className="text-2xl font-bold mb-4">Ready for Your Next Practice?</h2>
             <p className="text-zinc-600 dark:text-zinc-400 mb-6 max-w-2xl">
               Start a simulated interview with our AI interviewer. Choose your industry and role to get
@@ -251,6 +261,7 @@ export default function DashboardPage() {
             <Button
               size="lg"
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 transition-opacity"
+              onClick={() => setIsInterviewDialogOpen(true)}
             >
               Start Interview Session
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -258,6 +269,11 @@ export default function DashboardPage() {
           </div>
         </Card>
       </motion.div>
+
+      <InterviewDialog 
+        isOpen={isInterviewDialogOpen}
+        onClose={() => setIsInterviewDialogOpen(false)}
+      />
     </div>
   );
 } 

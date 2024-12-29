@@ -157,3 +157,71 @@ html {
     scroll-padding-top: 80px;
   }
 }
+
+.mirror-mode {
+  transform: scaleX(-1);
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.bg-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 640px) {
+  button, 
+  a,
+  input,
+  select,
+  textarea {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Improve spacing on mobile */
+  .mobile-spacing {
+    @apply space-y-4;
+  }
+  
+  /* Better form inputs on mobile */
+  input, textarea, select {
+    @apply text-base; /* Prevents zoom on iOS */
+  }
+}
+
+/* Prevent pull-to-refresh on mobile */
+html, body {
+  overscroll-behavior-y: none;
+}
+
+/* Smooth scrolling */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Dark mode transitions */
+* {
+  @apply transition-colors duration-200;
+}
+
+/* Focus styles */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-violet-600 dark:outline-violet-400;
+}
+
+/* Loading states */
+.loading-skeleton {
+  @apply animate-pulse bg-zinc-200 dark:bg-zinc-800 rounded;
+}
+
+/* Better mobile keyboard handling */
+.input-padding {
+  @apply pb-[env(safe-area-inset-bottom)];
+}

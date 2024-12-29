@@ -363,4 +363,107 @@ export async function generateQuizQuestions(topic: string, difficulty: string) {
     console.error('Error generating quiz questions:', error);
     throw new Error('Failed to generate quiz questions');
   }
+}
+
+export async function generateChallenge(difficulty: string = 'medium', topic: string = 'algorithms') {
+  // ... rest of the function implementation remains same
+}
+
+export async function generateQuestions(jobTitle: string, experience: string, jobDescription?: string) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-pro",
+    generationConfig: {
+      temperature: 0.8,
+      maxOutputTokens: 2048,
+    },
+  });
+
+  const prompt = `You are a technical interviewer specializing in ${jobTitle}. 
+  Create ${Math.min(Math.max(Number(experience), 5), 10)} technical interview questions for a candidate with ${experience} years of experience.
+
+  Return in JSON format:
+  {
+    "questions": [
+      {
+        "id": number,
+        "text": "detailed technical question",
+        "type": "technical/coding/system-design",
+        "difficulty": "basic/medium/advanced",
+        "topic": "specific technical area",
+        "timeEstimate": "minutes"
+      }
+    ]
+  }
+
+  Requirements:
+  1. Questions should be specific to ${jobTitle} role
+  2. Match difficulty to ${experience} years experience
+  3. Focus on practical technical knowledge
+  4. Include problem-solving scenarios`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    const cleanJson = text.replace(/```json\s*|\s*```/g, '').trim();
+    const parsed = JSON.parse(cleanJson);
+    
+    if (!parsed.questions || !Array.isArray(parsed.questions)) {
+      throw new Error('Invalid response format');
+    }
+
+    return {
+      questions: parsed.questions,
+      totalQuestions: parsed.questions.length
+    };
+  } catch (error) {
+    console.error('Error generating questions:', error);
+    throw new Error('Failed to generate interview questions');
+  }
+}
+
+export async function generateSampleAnswer(question: string, jobTitle: string, experience: string) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-pro",
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 1024,
+    },
+  });
+
+  const prompt = `As an expert ${jobTitle} with ${experience} years of experience, provide a strong answer to this interview question:
+
+  Question: "${question}"
+
+  Provide a response in this JSON format:
+  {
+    "sampleAnswer": {
+      "text": "detailed professional answer",
+      "keyElements": [
+        "list of 4-5 key points that make this answer strong",
+        "focus on technical accuracy and practical experience"
+      ],
+      "codeExample": "relevant code example if applicable to the question"
+    }
+  }
+
+  Requirements:
+  1. Answer should match ${experience} years of experience level
+  2. Include specific technical details and examples
+  3. Demonstrate deep understanding of the topic
+  4. Show practical implementation knowledge
+  5. Reference industry best practices`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    const cleanJson = text.replace(/```json\s*|\s*```/g, '').trim();
+    return JSON.parse(cleanJson);
+  } catch (error) {
+    console.error('Error generating sample answer:', error);
+    throw new Error('Failed to generate sample answer');
+  }
 } 
