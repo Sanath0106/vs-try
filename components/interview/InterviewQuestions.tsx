@@ -51,7 +51,7 @@ interface Question {
 
 interface InterviewQuestionsProps {
   jobTitle: string;
-  jobDescription: string | null | undefined;
+  jobDescription: string | null;
   experience: string;
 }
 
