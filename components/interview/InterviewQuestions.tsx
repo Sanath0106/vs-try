@@ -1,33 +1,45 @@
+interface SpeechRecognitionEvent {
+  results: {
+    [key: number]: {
+      [key: number]: {
+        transcript: string;
+      };
+    };
+  } & {
+    length: number;
+  };
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onend: () => void;
+  onstart: () => void;
+  stop: () => void;
+  start: () => void;
+}
+
 declare global {
   interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-  interface SpeechRecognitionResult {
-    [index: number]: SpeechRecognitionAlternative;
-  }
-  interface SpeechRecognitionAlternative {
-    readonly transcript: string;
-  }
-  interface SpeechRecognitionEvent {
-    results: SpeechRecognitionResultList;
-  }
-  interface SpeechRecognitionResultList {
-    readonly [index: number]: SpeechRecognitionResult;
-    readonly length: number;
+    SpeechRecognition: {
+      new(): SpeechRecognition;
+    };
+    webkitSpeechRecognition: {
+      new(): SpeechRecognition;
+    };
   }
 }
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, Speaker, SkipForward, X, Loader2, AlertCircle, Bot } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
 
 interface Question {
   id: number;
@@ -39,7 +51,7 @@ interface Question {
 
 interface InterviewQuestionsProps {
   jobTitle: string;
-  jobDescription?: string;
+  jobDescription: string | null | undefined;
   experience: string;
 }
 
@@ -66,19 +78,18 @@ export default function InterviewQuestions({ jobTitle, jobDescription, experienc
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const recordingTimer = useRef<NodeJS.Timeout>();
+  const recordingTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Speech recognition setup
   const recognition = typeof window !== 'undefined' 
     ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() 
     : null;
 
-  const generateQuestions = useCallback(async () => {
-    if (!jobTitle || !experience) {
-      setError('Job title and experience are required');
-      return;
-    }
+  useEffect(() => {
+    generateQuestions();
+  }, [jobTitle, experience]); // Add dependencies to ensure questions are generated when props change
 
+  const generateQuestions = async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -109,18 +120,7 @@ export default function InterviewQuestions({ jobTitle, jobDescription, experienc
     } finally {
       setIsLoading(false);
     }
-  }, [jobTitle, jobDescription, experience]);
-
-  useEffect(() => {
-    const init = async () => {
-      try {
-        await generateQuestions();
-      } catch (error) {
-        console.error('Failed to generate questions:', error);
-      }
-    };
-    init();
-  }, [generateQuestions]);
+  };
 
   const analyzeAnswer = async (answer: string) => {
     setIsAnalyzing(true);
@@ -158,12 +158,6 @@ export default function InterviewQuestions({ jobTitle, jobDescription, experienc
   const startRecording = async () => {
     try {
       if (recognition) {
-        // Cancel any ongoing speech synthesis
-        if (window.speechSynthesis.speaking) {
-          window.speechSynthesis.cancel();
-          setIsSpeaking(false);
-        }
-
         recognition.continuous = true;
         recognition.interimResults = true;
         
@@ -180,9 +174,9 @@ export default function InterviewQuestions({ jobTitle, jobDescription, experienc
           setRecordingTime(0);
         };
         
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
+        recognition.onresult = (event) => {
           const transcript = Array.from(event.results)
-            .map(result => (result as SpeechRecognitionResult)[0].transcript)
+            .map(result => result[0].transcript)
             .join('');
           setTranscript(transcript);
           setWrittenAnswer(transcript);
