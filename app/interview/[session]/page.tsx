@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 export default function InterviewSessionPage() {
   const searchParams = useSearchParams();
   const jobTitle = searchParams.get("title") || "";
-  const jobDescription = searchParams.get("description");
+  const jobDescription = searchParams.get("description") || "";
   const experience = searchParams.get("experience") || "";
 
   const [stream, setStream] = useState<MediaStream | null>(null);
