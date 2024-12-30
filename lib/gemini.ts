@@ -432,38 +432,82 @@ export async function generateSampleAnswer(question: string, jobTitle: string, e
     },
   });
 
-  const prompt = `As an expert ${jobTitle} with ${experience} years of experience, provide a strong answer to this interview question:
+  const prompt = `As an expert interviewer for ${jobTitle} positions, provide feedback for this technical interview question. 
+  Return a clean JSON response with NO markdown, code blocks, or special formatting:
 
   Question: "${question}"
 
-  Provide a response in this JSON format:
   {
-    "sampleAnswer": {
-      "text": "detailed professional answer",
-      "keyElements": [
-        "list of 4-5 key points that make this answer strong",
-        "focus on technical accuracy and practical experience"
-      ],
-      "codeExample": "relevant code example if applicable to the question"
-    }
-  }
-
-  Requirements:
-  1. Answer should match ${experience} years of experience level
-  2. Include specific technical details and examples
-  3. Demonstrate deep understanding of the topic
-  4. Show practical implementation knowledge
-  5. Reference industry best practices`;
+    "sampleAnswer": "Your detailed explanation here",
+    "keyTakeaways": [
+      "Key point 1",
+      "Key point 2",
+      "Key point 3"
+    ],
+    "summary": "Brief analysis here"
+  }`;
 
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
     
-    const cleanJson = text.replace(/```json\s*|\s*```/g, '').trim();
-    return JSON.parse(cleanJson);
-  } catch (error) {
+    // Enhanced JSON cleaning
+    let cleanJson = text
+      .replace(/```json\s*|\s*```/g, '')         // Remove code blocks
+      .replace(/[\n\r]/g, ' ')                   // Replace newlines with spaces
+      .replace(/\s+/g, ' ')                      // Normalize whitespace
+      .replace(/\\n/g, ' ')                      // Replace literal \n
+      .replace(/\\/g, '\\\\')                    // Escape backslashes
+      .replace(/(?<!\\)"/g, '\\"')              // Escape unescaped quotes
+      .replace(/^\s*{/, '{')                     // Clean start of JSON
+      .replace(/}\s*$/, '}')                     // Clean end of JSON
+      .replace(/([{,]\s*)([a-zA-Z0-9_]+)(\s*:)/g, '$1"$2"$3'); // Quote property names
+
+    // Extract JSON object
+    const jsonMatch = cleanJson.match(/({[\s\S]*})/);
+    if (!jsonMatch) {
+      throw new Error('No valid JSON object found in response');
+    }
+
+    cleanJson = jsonMatch[1];
+
+    // Additional cleaning for nested content
+    cleanJson = cleanJson
+      .replace(/`/g, "'")                        // Replace backticks with single quotes
+      .replace(/\*\*/g, '')                      // Remove markdown bold
+      .replace(/\\"/g, '"')                      // Fix double escaped quotes
+      .replace(/"{2,}/g, '"')                    // Fix multiple quotes
+      .replace(/(?<=:\s*"[^"]*)"(?=[^"]*")/g, '\\"'); // Escape quotes in values
+
+    try {
+      const parsed = JSON.parse(cleanJson);
+
+      // Validate the response structure
+      if (!parsed.sampleAnswer || !Array.isArray(parsed.keyTakeaways) || !parsed.summary) {
+        throw new Error('Invalid response structure');
+      }
+
+      // Clean the parsed data
+      return {
+        sampleAnswer: parsed.sampleAnswer.trim(),
+        keyTakeaways: parsed.keyTakeaways.map((point: string) => point.trim()),
+        summary: parsed.summary.trim()
+      };
+
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError);
+      console.error('Attempted to parse:', cleanJson);
+      throw new Error('Invalid JSON format in response');
+    }
+  } catch (error: any) {
     console.error('Error generating sample answer:', error);
-    throw new Error('Failed to generate sample answer');
+    throw new Error(
+      error.message === 'No valid JSON object found in response' || 
+      error.message === 'Invalid JSON format in response' || 
+      error.message === 'Invalid response structure'
+        ? error.message
+        : 'Failed to generate sample answer'
+    );
   }
 } 

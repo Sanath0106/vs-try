@@ -328,7 +328,6 @@ export default function DebuggerPage() {
                           language={selectedLanguage}
                           theme="vs-dark"
                           height="200px"
-                          readOnly={true}
                         />
                       </div>
 
@@ -355,7 +354,6 @@ ${challenge.correctCode}
                           language={selectedLanguage}
                           theme="vs-dark"
                           height="300px"
-                          readOnly={true}
                         />
                       </div>
                       

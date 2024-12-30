@@ -4,10 +4,11 @@ import Editor from "@monaco-editor/react";
 
 interface CodeEditorProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   language: string;
   theme?: string;
   height?: string;
+  readOnly?: boolean;
 }
 
 export default function CodeEditor({
@@ -24,7 +25,7 @@ export default function CodeEditor({
         language={language}
         theme={theme}
         value={value}
-        onChange={(value) => onChange(value || "")}
+        onChange={(value) => onChange?.(value || "")}
         options={{
           minimap: { enabled: false },
           fontSize: 14,
