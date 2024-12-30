@@ -8,11 +8,14 @@ import type {
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
 
-type ToasterToast = ToastProps & {
+type ToasterToast = {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  variant?: "default" | "destructive"
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 const actionTypes = {
@@ -137,35 +140,24 @@ function dispatch(action: Action) {
   })
 }
 
-type Toast = Omit<ToasterToast, "id">
+type ToastOptions = Partial<
+  Pick<ToasterToast, "description" | "title" | "action" | "variant">
+>
 
-function toast({ ...props }: Toast) {
+export function toast(opts: ToastOptions) {
   const id = genId()
-
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
-
+  
   dispatch({
     type: "ADD_TOAST",
     toast: {
-      ...props,
+      ...opts,
       id,
       open: true,
       onOpenChange: (open: boolean) => {
-        if (!open) dismiss()
+        if (!open) dispatch({ type: "DISMISS_TOAST", toastId: id })
       },
     },
   })
-
-  return {
-    id: id,
-    dismiss,
-    update,
-  }
 }
 
 function useToast() {
@@ -188,4 +180,4 @@ function useToast() {
   }
 }
 
-export { useToast, toast } 
+export { useToast } 
